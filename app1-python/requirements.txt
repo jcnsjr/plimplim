@@ -1,0 +1,10 @@
+blinker==1.9.0
+cachelib==0.13.0
+click==8.1.8
+Flask==3.1.0
+Flask-Caching==2.3.1
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+redis==5.2.1
+Werkzeug==3.1.3
