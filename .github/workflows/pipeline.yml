@@ -24,11 +24,11 @@ jobs:
 
     - name: Build Python application Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/app1-python:latest ./applications/app1-python
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/app1-python:latest ./app1-python
 
     - name: Build Go application Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/app2-go:latest ./applications/app2-go
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/app2-go:latest ./app2-go
 
     - name: Push Python application image to Docker Hub
       run: |
