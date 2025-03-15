@@ -32,7 +32,7 @@ jobs:
 
     - name: Push Python application image to Docker Hub
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/app2-go:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/app1-python:latest
 
     - name: Push Go application image to Docker Hub
       run: |
