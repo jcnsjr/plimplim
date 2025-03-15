@@ -1,0 +1,19 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  flask-app:
+    build:
+      context: ./app1-python
+    container_name: app1-python
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+    environment:
+      - CACHE_REDIS_HOST=redis
