@@ -17,3 +17,14 @@ services:
       - redis
     environment:
       - CACHE_REDIS_HOST=redis
+
+  go-app:
+    build: ./app2-go
+    container_name: app2-go
+    restart: always
+    ports:
+      - "5001:5000"  # Mapeia a porta do Go para 5001 na máquina host
+    depends_on:
+      - redis
+    environment:
+      - CACHE_REDIS_HOST=redis
