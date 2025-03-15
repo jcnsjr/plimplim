@@ -1,0 +1,39 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build Python application Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/python-app:latest ./applications/python-app
+
+    - name: Build Go application Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/go-app:latest ./applications/go-app
+
+    - name: Push Python application image to Docker Hub
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/python-app:latest
+
+    - name: Push Go application image to Docker Hub
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/go-app:latest
