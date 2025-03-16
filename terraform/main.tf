@@ -10,3 +10,12 @@ module "vpc" {
   availability_zone_1 = "us-east-1a"
   availability_zone_2 = "us-east-1b"
 }
+
+module "ecs" {
+  source             = "./modules/ecs"
+  python_app_image   = "jcnsjr/app1-python:latest"
+  go_app_image       = "jcnsjr/app2-go:latest"
+  subnet_az1_id        = module.vpc.subnet_az1_id
+  subnet_az2_id        = module.vpc.subnet_az2_id
+  vpc_id             = module.vpc.vpc_id
+}
