@@ -1,10 +1,5 @@
-variable "python_app_image" {
-  description = "Docker image for the Python application"
-  type        = string
-}
-
-variable "go_app_image" {
-  description = "Docker image for the Go application"
+variable "ecs_cluster_id" {
+  description = "ECS Cluster ID"
   type        = string
 }
 
@@ -23,9 +18,7 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "redis_service_id" {
+variable "local_dns_id" {
   description = "ID da VPC onde o ECS será implantado"
   type        = string
 }
-
-

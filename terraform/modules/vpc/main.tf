@@ -50,3 +50,9 @@ resource "aws_route_table_association" "subnet_az2_association" {
   subnet_id      = aws_subnet.subnet_az2.id
   route_table_id = aws_route_table.rtable.id
 }
+
+resource "aws_service_discovery_private_dns_namespace" "local_dns" {
+  name        = "plimplim.local" 
+  vpc         = aws_vpc.main.id
+  description = "Namespace interno para ECS"
+}
