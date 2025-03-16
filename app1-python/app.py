@@ -1,21 +1,25 @@
 import os
+import time
+import redis
 from flask import Flask, jsonify
 from flask_caching import Cache
 from datetime import datetime
-import redis
+
 
 app = Flask(__name__)
 
 # Obtém o host do Redis da variável de ambiente
 REDIS_HOST = os.getenv("CACHE_REDIS_HOST", "localhost")
 
-# Testa conexão com Redis
-try:
-    redis_client = redis.Redis(host=REDIS_HOST, port=6379, decode_responses=True)
-    redis_client.ping()
-    print(f"Conectado ao {REDIS_HOST}")
-except redis.ConnectionError:
-    print(f"Erro: Não foi possível conectar ao {REDIS_HOST}")
+while True:
+    try:
+        redis_client = redis.Redis(host=REDIS_HOST, port=6379, decode_responses=True)
+        redis_client.ping()  # Testa conexão
+        print(f"Conectado ao {REDIS_HOST}")
+        break  # Sai do loop quando a conexão for bem-sucedida
+    except redis.ConnectionError:
+        print(f"Falha em conectar ao {REDIS_HOST}. Tentando novamente em 5 segundos...")
+        time.sleep(5)  # Aguarda 5 segundos antes de tentar novamente
 
 # Configuração do cache no Redis
 app.config["CACHE_TYPE"] = "RedisCache"
