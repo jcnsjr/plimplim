@@ -14,6 +14,7 @@ import (
 
 var rdb *redis.Client
 var ctx = context.Background()
+var redisAvailable bool = true // Flag para saber se o Redis está acessível
 
 // Prefixo a ser adicionado às chaves do Redis
 const cachePrefix = "app2-go:"
@@ -27,15 +28,18 @@ func initRedis() {
 	rdb = redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:6379", redisHost),
 	})
+
 	_, err := rdb.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalf("Erro ao conectar ao Redis: %v", err)
+		log.Printf("⚠️ Redis não disponível: %v. A aplicação rodará sem cache.", err)
+		redisAvailable = false // Desativa o uso do Redis
+	} else {
+		fmt.Println("✅ Conectado ao Redis!")
 	}
-	fmt.Println("Conectado ao Redis!")
 }
 
 func main() {
-	// Inicia a conexão com Redis
+	// Tenta iniciar a conexão com Redis
 	initRedis()
 
 	// Cria o roteador do Gin
@@ -45,60 +49,56 @@ func main() {
 	router.GET("/fixed", func(c *gin.Context) {
 		// Adiciona o prefixo à chave
 		cacheKey := cachePrefix + "fixed"
+		fixedMessage := "Esta é uma resposta fixa."
 
-		// Verificar se a chave "fixed" está no cache
-		cachedFixed, err := rdb.Get(ctx, cacheKey).Result()
-		if err == redis.Nil {
-			// Se não existir no cache, retorna a resposta fixa e salva no cache
-			fixedMessage := "Esta é uma resposta fixa."
-			err = rdb.Set(ctx, cacheKey, fixedMessage, 1*time.Minute).Err()
-			if err != nil {
-				log.Printf("Erro ao salvar no cache: %v", err)
+		// Se o Redis estiver disponível, tenta buscar do cache
+		if redisAvailable {
+			cachedFixed, err := rdb.Get(ctx, cacheKey).Result()
+			if err == redis.Nil {
+				// Se não existir no cache, salva no Redis
+				err = rdb.Set(ctx, cacheKey, fixedMessage, 1*time.Minute).Err()
+				if err != nil {
+					log.Printf("Erro ao salvar no cache: %v", err)
+				}
+			} else if err != nil {
+				log.Printf("Erro ao acessar o cache: %v", err)
+			} else {
+				// Se já estiver no cache, retorna o valor
+				fixedMessage = cachedFixed
 			}
-			c.JSON(http.StatusOK, gin.H{
-				"message": fixedMessage,
-			})
-		} else if err != nil {
-			log.Printf("Erro ao acessar o cache: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Erro ao acessar o cache",
-			})
-		} else {
-			// Se já estiver no cache, retorna o valor
-			c.JSON(http.StatusOK, gin.H{
-				"message": cachedFixed,
-			})
 		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": fixedMessage,
+		})
 	})
 
 	// Rota Time com cache de 1 minuto
 	router.GET("/time", func(c *gin.Context) {
 		// Adiciona o prefixo à chave
 		cacheKey := cachePrefix + "time"
+		currentTime := time.Now().Format("2006-01-02 15:04:05")
 
-		// Verificar se a chave "time" está no cache
-		cachedTime, err := rdb.Get(ctx, cacheKey).Result()
-		if err == redis.Nil {
-			// Se não existir no cache, gera o horário atual e armazena no cache
-			currentTime := time.Now().Format("2006-01-02 15:04:05")
-			err = rdb.Set(ctx, cacheKey, currentTime, 1*time.Minute).Err()
-			if err != nil {
-				log.Printf("Erro ao salvar no cache: %v", err)
+		// Se o Redis estiver disponível, tenta buscar do cache
+		if redisAvailable {
+			cachedTime, err := rdb.Get(ctx, cacheKey).Result()
+			if err == redis.Nil {
+				// Se não existir no cache, salva no Redis
+				err = rdb.Set(ctx, cacheKey, currentTime, 1*time.Minute).Err()
+				if err != nil {
+					log.Printf("Erro ao salvar no cache: %v", err)
+				}
+			} else if err != nil {
+				log.Printf("Erro ao acessar o cache: %v", err)
+			} else {
+				// Se já estiver no cache, retorna o valor
+				currentTime = cachedTime
 			}
-			c.JSON(http.StatusOK, gin.H{
-				"server_time": currentTime,
-			})
-		} else if err != nil {
-			log.Printf("Erro ao acessar o cache: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Erro ao acessar o cache",
-			})
-		} else {
-			// Se já estiver no cache, retorna o valor
-			c.JSON(http.StatusOK, gin.H{
-				"server_time": cachedTime,
-			})
 		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"server_time": currentTime,
+		})
 	})
 
 	// Inicia o servidor
