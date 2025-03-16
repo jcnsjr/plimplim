@@ -9,11 +9,12 @@ show_menu() {
     echo "  Gerenciamento do ambiente Docker"
     echo "----------------------------------"
     echo "1) Subir infraestrutura (build)"
-    echo "2) Derrubar infraestrutura"
-    echo "3) Limpar imagens não utilizadas"
-    echo "4) Limpar volumes órfãos"
-    echo "5) Resetar tudo (Down + Limpeza Completa)"
-    echo "6) Sair"
+    echo "2) Ler logs"
+    echo "3) Derrubar infraestrutura"
+    echo "4) Limpar imagens não utilizadas"
+    echo "5) Limpar volumes órfãos"
+    echo "6) Resetar tudo (Down + Limpeza Completa)"
+    echo "7) Sair"
     echo -n "Escolha uma opção: "
 }
 
@@ -22,6 +23,11 @@ start_containers() {
     echo "Subindo a infraestrutura..."
     docker compose -p "$PROJECT_NAME" up --build -d
     echo "Infraestrutura iniciada com sucesso!"
+}
+
+follow_containers() {
+    echo "Lendo logs..."
+    docker compose -p "$PROJECT_NAME" logs -f
 }
 
 # Função para parar e remover os containers
@@ -58,12 +64,13 @@ while true; do
     show_menu
     read -r choice
     case $choice in
-        1) start_containers ;;
-        2) stop_containers ;;
-        3) clean_images ;;
-        4) clean_volumes ;;
-        5) reset_all ;;
-        6) echo "Saindo..."; exit 0 ;;
+        1) start_containers ; exit 0 ;;
+        2) follow_containers ; exit 0 ;;
+        3) stop_containers ; exit 0 ;;
+        4) clean_images ; exit 0 ;;
+        5) clean_volumes ; exit 0 ;;
+        6) reset_all ; exit 0 ;;
+        7) echo "Saindo..."; exit 0 ;;
         *) echo "Opção inválida, tente novamente." ;;
     esac
 done
