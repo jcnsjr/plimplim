@@ -52,7 +52,7 @@ func main() {
 	// Rota Fixed com cache de 1 minuto
 	router.GET("/fixed", func(c *gin.Context) {
 		cacheKey := cachePrefix + "fixed"
-		fixedMessage := "Esta é uma resposta fixa."
+		fixedMessage := "Esta é uma resposta fixa da aplicação GO"
 
 		// Tenta buscar do cache
 		cachedFixed, err := rdb.Get(ctx, cacheKey).Result()

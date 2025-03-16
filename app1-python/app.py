@@ -34,7 +34,7 @@ cache = Cache(app)
 @app.route("/fixed")
 @cache.cached()
 def fixed_text():
-    return jsonify({"fixed_text": "Retornando um texto fixo."})
+    return jsonify({"message": "Esta é uma resposta fixa da aplicação Python"})
 
 @app.route("/time")
 @cache.cached()
