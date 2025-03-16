@@ -1,5 +1,7 @@
 resource "aws_ecs_task_definition" "redis" {
   family = "redis-task"
+  execution_role_arn       = var.ecs_execution_role_arn  # Role de execução
+  task_role_arn            = var.ecs_execution_role_arn  # Role da task (caso precise de permissões adicionais)
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
@@ -7,16 +9,17 @@ resource "aws_ecs_task_definition" "redis" {
   container_definitions = jsonencode([
     {
       name      = "redis"
-      image     = "redis:alpine"
+      image     = var.redis_image
       cpu       = 256
       memory    = 512
       essential = true
-      healthCheck = {
-        command = ["CMD", "redis-cli", "ping"]  # Verifica se o Redis está respondendo
-        interval = 30  # Intervalo de 30 segundos
-        retries  = 3   # Tenta 3 vezes
-        start_period = 30  # Espera 30 segundos para começar a verificar
-        timeout  = 5   # Tempo de timeout para cada tentativa
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/ecs/redis"
+          awslogs-region        = "us-east-1"
+          awslogs-stream-prefix = "redis"
+        }
       }
       portMappings = [
         {
@@ -74,3 +77,8 @@ resource "aws_service_discovery_service" "redis_service_discovery" {
     routing_policy = "MULTIVALUE"
   }
 }
+
+resource "aws_cloudwatch_log_group" "redis_logs" {
+  name = "/ecs/redis"
+  retention_in_days = 1  # Defina a retenção conforme necessário
+} 
