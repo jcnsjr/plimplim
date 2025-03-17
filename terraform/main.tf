@@ -35,6 +35,7 @@ module "redis" {
   vpc_id                 = module.vpc.vpc_id
   local_dns_id           = module.vpc.local_dns_id
   ecs_execution_role_arn = module.ecs.ecs_execution_role_arn
+  ecs_sg_id              = module.ecs.ecs_sg_id
 }
 
 terraform {

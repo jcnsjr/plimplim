@@ -32,3 +32,8 @@ variable "redis_image" {
   description = "Docker image for Redis"
   type        = string
 }
+
+variable "ecs_sg_id" {
+  description = "Docker image for Redis"
+  type        = string
+}
