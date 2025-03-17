@@ -31,3 +31,17 @@ module "redis" {
   local_dns_id             = module.vpc.local_dns_id
   ecs_execution_role_arn   = module.ecs.ecs_execution_role_arn
 }
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+  backend "s3" {
+    bucket = "desafio-globo"
+    key    = "terraform/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
