@@ -56,3 +56,29 @@ resource "aws_service_discovery_private_dns_namespace" "local_dns" {
   vpc         = aws_vpc.main.id
   description = "Namespace interno para ECS"
 }
+
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-sg"
+  description = "Security Group for ALB"
+  vpc_id      = aws_vpc.main.id
+
+  # Permitir tráfego HTTP de qualquer lugar
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Permitir saída livre (para comunicação com as ECS tasks)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "alb-security-group"
+  }
+}

@@ -92,6 +92,11 @@ resource "aws_ecs_service" "python_service" {
     assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.python_tg.arn
+    container_name   = "app1-python-app"
+    container_port   = 5000
+  }
 }
 
 resource "aws_ecs_service" "go_service" {
@@ -105,6 +110,85 @@ resource "aws_ecs_service" "go_service" {
     subnets          = [var.subnet_az1_id, var.subnet_az2_id]
     assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
+  }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.go_tg.arn
+    container_name   = "app2-go-app"
+    container_port   = 5000
+  }
+}
+
+resource "aws_lb" "python_alb" {
+  name               = "python-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [var.alb_sg_id]
+  subnets            = [var.subnet_az1_id, var.subnet_az2_id]
+
+  enable_deletion_protection = false
+}
+
+resource "aws_lb_target_group" "python_tg" {
+  name        = "python-target-group"
+  port        = 5000  # Porta da aplicação
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path                = "/fixed"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+resource "aws_lb_listener" "python_http" {
+  load_balancer_arn = aws_lb.python_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.python_tg.arn
+  }
+}
+
+resource "aws_lb" "go_alb" {
+  name               = "go-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [var.alb_sg_id]
+  subnets            = [var.subnet_az1_id, var.subnet_az2_id]
+
+  enable_deletion_protection = false
+}
+
+resource "aws_lb_target_group" "go_tg" {
+  name        = "go-target-group"
+  port        = 5000  # Porta da aplicação
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path                = "/fixed"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+resource "aws_lb_listener" "go_http" {
+  load_balancer_arn = aws_lb.go_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.go_tg.arn
   }
 }
 

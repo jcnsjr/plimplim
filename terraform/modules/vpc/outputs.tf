@@ -13,3 +13,7 @@ output "subnet_az2_id" {
 output "local_dns_id" {
   value = aws_service_discovery_private_dns_namespace.local_dns.id
 }
+
+output "alb_sg_id" {
+  value = aws_security_group.alb_sg.id
+}

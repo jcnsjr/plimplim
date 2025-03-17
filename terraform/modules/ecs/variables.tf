@@ -24,8 +24,12 @@ variable "vpc_id" {
 }
 
 variable "redis_service_id" {
-  description = "ID da VPC onde o ECS será implantado"
+  description = "ID do Redis Service"
   type        = string
 }
 
+variable "alb_sg_id" {
+  description = "ID do SG para ALB"
+  type        = string
+}
 

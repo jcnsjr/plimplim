@@ -19,6 +19,7 @@ module "ecs" {
   subnet_az2_id            = module.vpc.subnet_az2_id
   vpc_id                   = module.vpc.vpc_id
   redis_service_id         = module.redis.redis_service_id
+  alb_sg_id                = module.vpc.alb_sg_id
 }
 
 module "redis" {
