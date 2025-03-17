@@ -28,7 +28,7 @@ O cliente acessa as aplicações pela internet, passando pelo Internet Gateway (
 
 O tempo de cache varia conforme a aplicação: na aplicação Python, o cache é válido por 10 segundos, enquanto na aplicação Go, o cache dura 1 minuto. Se um novo request for feito dentro desses intervalos, a aplicação retorna a resposta armazenada no Redis. Fora desse período, a aplicação busca as informações atualizadas, armazena-as novamente no cache e as retorna ao usuário.
 
-As aplicações são dependentes do Redis. Se o Redis ficar indisponível, elas entram em um loop de tentativas de reconexão antes de processar qualquer requisição. Isso garante que o cache seja priorizado, mas pode impactar a disponibilidade das aplicações caso o Redis não seja restaurado rapidamente.
+As aplicações são dependentes do Redis. Se elas não conseguirem se comunicar com o servidor de cache, entram em um loop de tentativas de reconexão antes de processar qualquer requisição. Isso garante que o cache seja priorizado, mas pode impactar a disponibilidade das aplicações caso o Redis não seja criado.
 
 ![Arquitetura do Projeto](Diagram.jpeg)
 
@@ -44,9 +44,10 @@ A infraestrutura na nuvem foi provisionada utilizando Terraform, garantindo um a
 
 ###  **Como Provisionar a Infraestrutura na AWS**
 
-Para provisionar a infraestrutura na AWS manualmente, execute o seguinte comando:
+Para provisionar a infraestrutura na AWS manualmente, execute os seguintes comandos:
 
 ```bash
+terraform init
 terraform apply --auto-approve
 ```
 
@@ -62,7 +63,7 @@ Certifique-se de ter as seguintes ferramentas instaladas antes de executar o pro
 
 ##  **Pipeline de aplicações**
 
-Para facilitar a implementação de mudanças e garantir a entrega contínua, foi criada uma pipeline de CI/CD automatizada. Essa pipeline segue um fluxo simplificado, focando na construção, publicação e atualização dos ECS Services.
+Para facilitar a implementação de mudanças e garantir a entrega contínua, foi criada uma pipeline de CI/CD automatizada. Essa pipeline segue um fluxo simplificado, focando na construção, publicação e atualização dos ECS Services. Ela só irá ser executada quando os códigos das pastas app1-python e app2-go sofrerem alguma alteração
 
 - **Build (Construção das Imagens Docker)**: As imagens Docker das aplicações são construídas a partir dos Dockerfiles definidos no projeto.
 - **Push (Publicação no Docker Hub)**: Após a construção, as imagens são enviadas para o Docker Hub, garantindo que estejam disponíveis para uso em qualquer ambiente.
@@ -70,7 +71,7 @@ Para facilitar a implementação de mudanças e garantir a entrega contínua, fo
 
 ##  **Pipeline de infraestrutura**
 
-Para garantir que a infraestrutura esteja sempre alinhada com o código versionado no Git, foi criada uma pipeline adicional. Essa pipeline foca na validação e aplicação das mudanças de infraestrutura definidas nos módulos Terraform.
+Para garantir que a infraestrutura esteja sempre alinhada com o código versionado no Git, foi criada uma pipeline adicional. Essa pipeline foca na validação e aplicação das mudanças de infraestrutura definidas nos módulos Terraform. Ela só irá ser executada quando os códigos da pasta terraform sofrerem alguma alteração
 
 - **Validação (Validate)**: Valida a sintaxe e a configuração dos arquivos Terraform para garantir que não há erros.
 - **Aplicação (Apply)**: Aplica as mudanças na infraestrutura, garantindo que ela esteja de acordo com o código versionado no Git.
