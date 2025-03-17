@@ -3,12 +3,12 @@ variable "ecs_cluster_id" {
   type        = string
 }
 
-variable "subnet_az1_id" {
+variable "subnet_private_az1_id" {
   description = "Subnet 1 ID"
   type        = string
 }
 
-variable "subnet_az2_id" {
+variable "subnet_private_az2_id" {
   description = "Subnet 2 ID"
   type        = string
 }

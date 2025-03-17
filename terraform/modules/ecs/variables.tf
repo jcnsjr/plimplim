@@ -8,13 +8,23 @@ variable "go_app_image" {
   type        = string
 }
 
-variable "subnet_az1_id" {
-  description = "Subnet 1 ID"
+variable "subnet_private_az1_id" {
+  description = "Private Subnet 1 ID"
   type        = string
 }
 
-variable "subnet_az2_id" {
-  description = "Subnet 2 ID"
+variable "subnet_private_az2_id" {
+  description = "Private Subnet 2 ID"
+  type        = string
+}
+
+variable "subnet_public_az1_id" {
+  description = "Public Subnet 1 ID"
+  type        = string
+}
+
+variable "subnet_public_az2_id" {
+  description = "Public Subnet 2 ID"
   type        = string
 }
 

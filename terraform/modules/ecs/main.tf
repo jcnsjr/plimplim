@@ -88,7 +88,7 @@ resource "aws_ecs_service" "python_service" {
   desired_count   = 1
   launch_type     = "FARGATE"
   network_configuration {
-    subnets          = [var.subnet_az1_id, var.subnet_az2_id]
+    subnets          = [var.subnet_private_az1_id, var.subnet_private_az2_id]
     assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
@@ -107,7 +107,7 @@ resource "aws_ecs_service" "go_service" {
   desired_count   = 1
   launch_type     = "FARGATE"
   network_configuration {
-    subnets          = [var.subnet_az1_id, var.subnet_az2_id]
+    subnets          = [var.subnet_private_az1_id, var.subnet_private_az2_id]
     assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
@@ -123,7 +123,7 @@ resource "aws_lb" "python_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_sg_id]
-  subnets            = [var.subnet_az1_id, var.subnet_az2_id]
+  subnets            = [var.subnet_public_az1_id, var.subnet_public_az2_id]
 
   enable_deletion_protection = false
 }
@@ -160,7 +160,7 @@ resource "aws_lb" "go_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.alb_sg_id]
-  subnets            = [var.subnet_az1_id, var.subnet_az2_id]
+  subnets            = [var.subnet_public_az1_id, var.subnet_public_az2_id]
 
   enable_deletion_protection = false
 }

@@ -3,12 +3,22 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "subnet_az1_cidr" {
+variable "subnet_private_az1_cidr" {
   description = "CIDR block for Subnet 1"
   type        = string
 }
 
-variable "subnet_az2_cidr" {
+variable "subnet_private_az2_cidr" {
+  description = "CIDR block for Subnet 2"
+  type        = string
+}
+
+variable "subnet_public_az1_cidr" {
+  description = "CIDR block for Subnet 1"
+  type        = string
+}
+
+variable "subnet_public_az2_cidr" {
   description = "CIDR block for Subnet 2"
   type        = string
 }
