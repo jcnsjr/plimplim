@@ -88,7 +88,7 @@ resource "aws_ecs_service" "python_service" {
   desired_count   = 1
   launch_type     = "FARGATE"
   network_configuration {
-    subnets          = [var.subnet_private_az1_id, var.subnet_private_az1_id]
+    subnets          = [var.subnet_private_az1_id, var.subnet_private_az2_id]
     security_groups  = [aws_security_group.ecs_sg.id]
   }
   load_balancer {
@@ -106,7 +106,7 @@ resource "aws_ecs_service" "go_service" {
   desired_count   = 1
   launch_type     = "FARGATE"
   network_configuration {
-    subnets          = [var.subnet_private_az1_id, var.subnet_private_az1_id]
+    subnets          = [var.subnet_private_az1_id, var.subnet_private_az2_id]
     security_groups  = [aws_security_group.ecs_sg.id]
   }
   load_balancer {
