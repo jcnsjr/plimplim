@@ -1,7 +1,11 @@
 
 # Desafio DevOps
 
-Este projeto explora duas abordagens para execução de aplicações: **localmente** usando Docker e **na nuvem** utilizando a AWS com Terraform. Abaixo estão os detalhes de cada abordagem, bem como instruções para execução.
+Este projeto permite a execução das aplicações de duas formas: localmente, utilizando Docker, e na nuvem, através da AWS com Terraform. Embora seja possível provisionar a infraestrutura diretamente com comandos do Terraform, a melhor prática é tratar o Git como a fonte da verdade. Qualquer alteração na infraestrutura deve ser realizada por meio de modificações no código Terraform versionado no repositório, garantindo rastreabilidade, colaboração e consistência no ambiente.
+
+As variáveis de ambiente, tanto da AWS quanto do Docker Hub, estão configuradas como secrets nas pipelines, assegurando uma implementação segura e automatizada.
+
+Abaixo, seguem os detalhes de cada abordagem e as instruções para execução.
 
 ---
 
