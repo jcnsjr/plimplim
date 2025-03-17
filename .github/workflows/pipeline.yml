@@ -26,19 +26,16 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push app1-python (if changed)
-      # if: contains(github.event.head_commit.modified, 'app1-python/')
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/app1-python:latest ./app1-python
         docker push ${{ secrets.DOCKER_USERNAME }}/app1-python:latest
 
     - name: Build and push app2-go (if changed)
-      if: contains(github.event.head_commit.modified, 'app2-go/')
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/app2-go:latest ./app2-go
         docker push ${{ secrets.DOCKER_USERNAME }}/app2-go:latest
 
     - name: Validate ECS Cluster and Service
-      if: contains(github.event.head_commit.modified, 'app1-python/') || contains(github.event.head_commit.modified, 'app2-go/')
       run: |
         CLUSTER_NAME="plimplim-cluster"
         APP1_SERVICE_NAME="app1-python-service"
