@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'app1-python/**'
+      - 'app2-go/**'
 
 jobs:
   build:
@@ -11,7 +14,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
@@ -21,6 +24,51 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push app1-python (if changed)
+      if: contains(github.event.head_commit.modified, 'app1-python/')
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/app1-python:latest ./app1-python
+        docker push ${{ secrets.DOCKER_USERNAME }}/app1-python:latest
+
+    - name: Build and push app2-go (if changed)
+      if: contains(github.event.head_commit.modified, 'app2-go/')
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/app2-go:latest ./app2-go
+        docker push ${{ secrets.DOCKER_USERNAME }}/app2-go:latest
+
+    - name: Validate ECS Cluster and Service
+      if: contains(github.event.head_commit.modified, 'app1-python/') || contains(github.event.head_commit.modified, 'app2-go/')
+      run: |
+        CLUSTER_NAME="plimplim-cluster"
+        APP1_SERVICE_NAME="app1-python-service"
+        APP2_SERVICE_NAME="app2-go-service"
+
+        if aws ecs describe-clusters --clusters $CLUSTER_NAME --query "clusters[0].status" --output text 2>/dev/null | grep -q "ACTIVE"; then
+          echo "Cluster $CLUSTER_NAME found. Checking service..."
+          
+          if aws ecs describe-services --cluster $CLUSTER_NAME --services $APP1_SERVICE_NAME --query "services[0].status" --output text 2>/dev/null | grep -q "ACTIVE"; then
+            echo "Service $APP1_SERVICE_NAME found. Proceeding with update..."
+            aws ecs update-service --cluster $CLUSTER_NAME --service $APP1_SERVICE_NAME --force-new-deployment
+          else
+            echo "Service $APP1_SERVICE_NAME not found. Skipping update."
+          fi
+          if aws ecs describe-services --cluster $CLUSTER_NAME --services $APP2_SERVICE_NAME --query "services[0].status" --output text 2>/dev/null | grep -q "ACTIVE"; then
+            echo "Service $APP2_SERVICE_NAME found. Proceeding with update..."
+            aws ecs update-service --cluster $CLUSTER_NAME --service $APP2_SERVICE_NAME --force-new-deployment
+          else
+            echo "Service $APP2_SERVICE_NAME not found. Skipping update."
+          fi
+        else
+          echo "Cluster $CLUSTER_NAME not found. Skipping update."
+        fi
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+
+
+
 
     - name: Build Python application Docker image
       run: |
