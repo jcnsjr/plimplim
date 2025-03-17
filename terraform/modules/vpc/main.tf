@@ -9,7 +9,7 @@ resource "aws_vpc" "main" {
 
 resource "aws_subnet" "subnet_private_az1" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.subnet_private_az2_cidr
+  cidr_block        = var.subnet_private_az1_cidr
   availability_zone = var.availability_zone_1
   map_public_ip_on_launch = false
   tags = {
@@ -41,7 +41,7 @@ resource "aws_nat_gateway" "ngw" {
 
 resource "aws_subnet" "subnet_public_az1" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.subnet_public_az2_cidr
+  cidr_block        = var.subnet_public_az1_cidr
   availability_zone = var.availability_zone_1
   map_public_ip_on_launch = true
   tags = {
