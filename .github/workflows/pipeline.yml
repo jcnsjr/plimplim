@@ -26,7 +26,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push app1-python (if changed)
-      if: contains(github.event.head_commit.modified, 'app1-python/')
+      # if: contains(github.event.head_commit.modified, 'app1-python/')
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/app1-python:latest ./app1-python
         docker push ${{ secrets.DOCKER_USERNAME }}/app1-python:latest
