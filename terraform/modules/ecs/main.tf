@@ -240,4 +240,4 @@ resource "aws_cloudwatch_log_group" "app1_python_logs" {
 resource "aws_cloudwatch_log_group" "app2_go_logs" {
   name = "/ecs/app2-go"
   retention_in_days = 1  # Defina a retenção conforme necessário
-} 
+}
