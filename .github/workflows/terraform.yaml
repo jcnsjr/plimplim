@@ -7,8 +7,6 @@ on:
     paths:
       - 'terraform/**'
 
-name: Terraform CI/CD
-
 jobs:
   terraform:
     runs-on: ubuntu-latest
