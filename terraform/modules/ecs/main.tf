@@ -89,7 +89,6 @@ resource "aws_ecs_service" "python_service" {
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = [var.subnet_private_az1_id, var.subnet_private_az2_id]
-    assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
   load_balancer {
@@ -108,7 +107,6 @@ resource "aws_ecs_service" "go_service" {
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = [var.subnet_private_az1_id, var.subnet_private_az2_id]
-    assign_public_ip = true
     security_groups  = [aws_security_group.ecs_sg.id]
   }
   load_balancer {

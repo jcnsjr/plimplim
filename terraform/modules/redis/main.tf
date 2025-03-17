@@ -39,7 +39,6 @@ resource "aws_ecs_service" "redis_service" {
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = [var.subnet_private_az1_id, var.subnet_private_az2_id]
-    assign_public_ip = true
     security_groups  = [aws_security_group.redis_sg.id]
   }
   service_registries {
